@@ -1,30 +1,26 @@
 package api
 
-import (
-	"context"
+// RunSwarmConfig run the swarm function
+func RunSwarmConfig(config SwarmConfig) (string, error) {
+	if config.Nodetype == "manager" {
+		node, err := SearchSwarmCluster(config)
+		if err != nil {
+			return "", err
+		}
 
-	docker "github.com/fsouza/go-dockerclient"
-)
-
-func RunSwarmConfig(nodetype, endpoint string) (string, error) {
-	ctx := context.Background()
-
-	ep := endpoint
-	client, err := docker.NewClient(ep)
-	if err != nil {
-		return "", err
-	}
-
-	if nodetype == "manager" {
-		node := SearchSwarmCluster(ctx, client, nodetype)
 		if node == nil {
-			err = SwarmInit(ctx, client)
+			err = SwarmInit(config)
 			if err != nil {
 				return "", err
 			}
 			return "Docker swarm cluster initiated", nil
 		}
-		tkn := SwarmManagerToken(ctx, client)
+
+		tkn, err := SwarmManagerToken(config)
+		if err != nil {
+			return "", err
+		}
+
 		return tkn, nil
 	}
 

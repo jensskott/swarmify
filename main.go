@@ -9,10 +9,12 @@ import (
 
 func main() {
 
-	nodeType := "manager"
-	endPoint := "unix:///var/run/docker.sock"
+	config := &api.SwarmConfig{
+		Endpoint: "unix:///var/run/docker.sock",
+		Nodetype: "manager",
+	}
 
-	resp, err := api.RunSwarmConfig(nodeType, endPoint)
+	resp, err := api.RunSwarmConfig(*config)
 	if err != nil {
 		log.Fatal(err)
 	}

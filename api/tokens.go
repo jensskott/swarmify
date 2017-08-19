@@ -1,17 +1,29 @@
 package api
 
-import (
-	"context"
+import "context"
 
-	docker "github.com/fsouza/go-dockerclient"
-)
+// SwarmManagerToken lookup
+func SwarmManagerToken(config SwarmConfig) (string, error) {
+	ctx := context.Background()
 
-func SwarmManagerToken(ctx context.Context, client *docker.Client) string {
+	client, err := Connect(config)
+	if err != nil {
+		return "", err
+	}
+
 	x, _ := client.InspectSwarm(ctx)
-	return x.JoinTokens.Manager
+	return x.JoinTokens.Manager, nil
 }
 
-func SwarmWorkerToken(ctx context.Context, client *docker.Client) string {
+// SwarmWorkerToken lookup
+func SwarmWorkerToken(config SwarmConfig) (string, error) {
+	ctx := context.Background()
+
+	client, err := Connect(config)
+	if err != nil {
+		return "", err
+	}
+
 	x, _ := client.InspectSwarm(ctx)
-	return x.JoinTokens.Worker
+	return x.JoinTokens.Worker, nil
 }

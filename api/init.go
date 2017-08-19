@@ -7,7 +7,15 @@ import (
 	docker "github.com/fsouza/go-dockerclient"
 )
 
-func SwarmInit(ctx context.Context, client *docker.Client) error {
+// SwarmInit init swarm if needed
+func SwarmInit(config SwarmConfig) error {
+	ctx := context.Background()
+
+	client, err := Connect(config)
+	if err != nil {
+		return err
+	}
+
 	s := &docker.InitSwarmOptions{
 		swarm.InitRequest{
 			ListenAddr:       "0.0.0.0:2377",
@@ -17,7 +25,7 @@ func SwarmInit(ctx context.Context, client *docker.Client) error {
 		},
 		ctx,
 	}
-	_, err := client.InitSwarm(*s)
+	_, err = client.InitSwarm(*s)
 	if err != nil {
 		return err
 	}
