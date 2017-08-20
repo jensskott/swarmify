@@ -2,28 +2,22 @@ package api
 
 import "context"
 
-// SwarmManagerToken lookup
-func SwarmManagerToken(config SwarmConfig) (string, error) {
+// SwarmTokens from manager
+func SwarmTokens(config SwarmConfig) (map[string]string, error) {
+
+	var tokens map[string]string
+	tokens = make(map[string]string)
+
 	ctx := context.Background()
 
 	client, err := Connect(config)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	x, _ := client.InspectSwarm(ctx)
-	return x.JoinTokens.Manager, nil
-}
+	tokens["Manager"] = x.JoinTokens.Manager
+	tokens["Worker"] = x.JoinTokens.Worker
 
-// SwarmWorkerToken lookup
-func SwarmWorkerToken(config SwarmConfig) (string, error) {
-	ctx := context.Background()
-
-	client, err := Connect(config)
-	if err != nil {
-		return "", err
-	}
-
-	x, _ := client.InspectSwarm(ctx)
-	return x.JoinTokens.Worker, nil
+	return tokens, nil
 }

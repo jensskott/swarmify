@@ -1,0 +1,5 @@
+endpoint: unix:///var/run/docker.sock
+nodetype: manager
+swarmport: "2377"
+workertoken: SWMTKN-1-1quxwkao4lynjpridoin85bafjfhm5fakjv2j2ha7y60dt6srf-0vwlv5xllbuzjupv3go898rc4
+managertoken: SWMTKN-1-1quxwkao4lynjpridoin85bafjfhm5fakjv2j2ha7y60dt6srf-bqc0nu4bnfj9jiobtmzmq6oev
