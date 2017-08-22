@@ -6,7 +6,7 @@ type SwarmConfig struct {
 	Nodetype     string
 	Managertoken string
 	Workertoken  string
-	SwarmMaster  string
+	SwarmMaster  []string
 	SwarmPort    string
 	PrivateIP    string
 	ClientIP     string

@@ -9,12 +9,12 @@ import (
 )
 
 // SwarmInit init swarm if needed
-func SwarmInit(config SwarmConfig) error {
+func SwarmInit(config SwarmConfig) (string, error) {
 	ctx := context.Background()
 
 	client, err := Connect(config)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	s := &docker.InitSwarmOptions{
@@ -28,7 +28,7 @@ func SwarmInit(config SwarmConfig) error {
 	}
 	_, err = client.InitSwarm(*s)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return "Swarm cluster initialized", nil
 }

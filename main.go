@@ -30,6 +30,9 @@ type AppConfig struct {
 func main() {
 
 	var x ConfigFile
+	var masters []string
+
+	masters = append(masters, "10.0.0.1")
 
 	// Read config from yaml file
 	yamlFile, err := ioutil.ReadFile("config.yaml")
@@ -48,6 +51,7 @@ func main() {
 		Endpoint:     config.DockerConfig.Endpoint,
 		Nodetype:     config.DockerConfig.Nodetype,
 		SwarmPort:    config.DockerConfig.SwarmPort,
+		SwarmMaster:  masters,
 		Managertoken: config.DockerConfig.ManagerToken,
 		Workertoken:  config.DockerConfig.WorkerToken,
 		PrivateIP:    config.PrivateIP,
@@ -55,7 +59,7 @@ func main() {
 	}
 	switch os.Args[1] {
 	case "init":
-		err = api.SwarmInit(*dockerCfg)
+		resp, err := api.SwarmInit(*dockerCfg)
 		check(err)
 
 		token, err := api.SwarmTokens(*dockerCfg)
@@ -74,15 +78,15 @@ func main() {
 
 		err = ioutil.WriteFile("config.yaml", yaml, 0644)
 		check(err)
-	case "manager":
+
+		log.Println(resp)
+	case "manager", "worker":
 		resp, err := api.JoinSwarm(*dockerCfg)
 		check(err)
 
 		fmt.Println(resp)
-	case "worker":
-		fmt.Println("Worker")
 	case "heal":
-		fmt.Println("Healing")
+		fmt.Println("Healing not active anymore")
 	}
 }
 
