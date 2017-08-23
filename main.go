@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -43,13 +42,10 @@ func main() {
 
 	var x DockerConfigFile
 	var y OvhConfigFile
-	var masters []string
 
 	dir, _ := os.Getwd()
 	dockerYaml := (dir + "/docker.yaml")
 	ovhYaml := (dir + "/ovh.yaml")
-
-	masters = append(masters, "10.0.0.1")
 
 	// Read config from yaml file
 	dockerYamlFile, err := ioutil.ReadFile(dockerYaml)
@@ -70,17 +66,6 @@ func main() {
 		ClientIP:     os.Args[2],
 	}
 
-	dockerCfg := &api.SwarmConfig{
-		Endpoint:     config.DockerConfig.Endpoint,
-		Nodetype:     config.DockerConfig.Nodetype,
-		SwarmPort:    config.DockerConfig.SwarmPort,
-		SwarmMaster:  masters,
-		Managertoken: config.DockerConfig.ManagerToken,
-		Workertoken:  config.DockerConfig.WorkerToken,
-		PrivateIP:    config.PrivateIP,
-		ClientIP:     config.ClientIP,
-	}
-
 	ovhCfg := &ovh.Config{
 		IdentityEndpoint: config.OvhConfig.IdentityEndpoint,
 		Username:         config.OvhConfig.Username,
@@ -90,12 +75,19 @@ func main() {
 		Region:           config.OvhConfig.Region,
 	}
 
-	fmt.Println(ovhCfg)
-
-	resp, err := ovh.SearchImage(*ovhCfg)
+	masterIPs, err := ovh.SearchSwarm(*ovhCfg, config.DockerConfig.Nodetype)
 	check(err)
 
-	fmt.Println(resp)
+	dockerCfg := &api.SwarmConfig{
+		Endpoint:     config.DockerConfig.Endpoint,
+		Nodetype:     config.DockerConfig.Nodetype,
+		SwarmPort:    config.DockerConfig.SwarmPort,
+		SwarmMaster:  masterIPs,
+		Managertoken: config.DockerConfig.ManagerToken,
+		Workertoken:  config.DockerConfig.WorkerToken,
+		PrivateIP:    config.PrivateIP,
+		ClientIP:     config.ClientIP,
+	}
 
 	switch os.Args[1] {
 	case "init":
@@ -121,6 +113,7 @@ func main() {
 
 		log.Println(resp)
 	case "manager", "worker":
+
 		resp, err := api.JoinSwarm(*dockerCfg)
 		check(err)
 
