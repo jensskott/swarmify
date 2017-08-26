@@ -4,3 +4,8 @@ password: 9djNmvwwqF8CaMU9uwn9aRsC7U3YAyMa
 tenantid: 6f4784ed5ce5486084ed1004c53c2642
 domainname: default
 region: BHS3
+imageid: a4564ff3-d226-422e-98fe-b0c753dd4657
+flavorname: b2-7
+networks:
+- 467ed94d-13d0-4bcb-83e4-1f383a282ebf
+- bf8869ea-aaba-4a34-b7e9-9010861ff5f6

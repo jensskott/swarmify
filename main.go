@@ -1,98 +1,62 @@
 package main
 
 import (
-	"io/ioutil"
+	"fmt"
 	"log"
 	"os"
 
-	yaml "gopkg.in/yaml.v2"
-
 	api "github.com/jensskott/swarmify/api"
 	"github.com/jensskott/swarmify/ovh"
+	"github.com/rackspace/gophercloud"
+	"github.com/rackspace/gophercloud/openstack"
+	"github.com/rackspace/gophercloud/openstack/networking/v2/networks"
+	"github.com/rackspace/gophercloud/pagination"
 )
 
-// DockerConfigFile for the run
-type DockerConfigFile struct {
-	Endpoint     string `yaml:"endpoint"`
-	Nodetype     string `yaml:"nodetype"`
-	SwarmPort    string `yaml:"swarmport"`
-	WorkerToken  string `yaml:"workertoken"`
-	ManagerToken string `yaml:"managertoken"`
-}
-
-// OvhConfigFile for the run
-type OvhConfigFile struct {
-	IdentityEndpoint string `yaml:"identityendpoint"`
-	Username         string `yaml:"username"`
-	Password         string `yaml:"password"`
-	TenantID         string `yaml:"tenantid"`
-	DomainName       string `yaml:"domainname"`
-	Region           string `yaml:"region"`
-}
-
-// AppConfig for the whole app
-type AppConfig struct {
-	DockerConfig DockerConfigFile
-	OvhConfig    OvhConfigFile
-	PrivateIP    string
-	ClientIP     string
-}
-
 func main() {
-
-	var x DockerConfigFile
-	var y OvhConfigFile
 
 	dir, _ := os.Getwd()
 	dockerYaml := (dir + "/docker.yaml")
 	ovhYaml := (dir + "/ovh.yaml")
 
-	// Read config from yaml file
-	dockerYamlFile, err := ioutil.ReadFile(dockerYaml)
-	check(err)
-
-	ovhYamlFile, err := ioutil.ReadFile(ovhYaml)
-	check(err)
-
-	err = yaml.Unmarshal(dockerYamlFile, &x)
-	check(err)
-
-	err = yaml.Unmarshal(ovhYamlFile, &y)
+	dockerStruct, ovhStruct := readYaml(dockerYaml, ovhYaml)
 
 	config := &AppConfig{
-		DockerConfig: x,
-		OvhConfig:    y,
-		PrivateIP:    os.Args[2],
-		ClientIP:     os.Args[2],
-	}
-
-	ovhCfg := &ovh.Config{
-		IdentityEndpoint: config.OvhConfig.IdentityEndpoint,
-		Username:         config.OvhConfig.Username,
-		Password:         config.OvhConfig.Password,
-		TenantID:         config.OvhConfig.TenantID,
-		DomainName:       config.OvhConfig.DomainName,
-		Region:           config.OvhConfig.Region,
-	}
-
-	masterIPs, err := ovh.SearchSwarm(*ovhCfg, config.DockerConfig.Nodetype)
-	check(err)
-
-	dockerCfg := &api.SwarmConfig{
-		Endpoint:     config.DockerConfig.Endpoint,
-		Nodetype:     config.DockerConfig.Nodetype,
-		SwarmPort:    config.DockerConfig.SwarmPort,
-		SwarmMaster:  masterIPs,
-		Managertoken: config.DockerConfig.ManagerToken,
-		Workertoken:  config.DockerConfig.WorkerToken,
-		PrivateIP:    config.PrivateIP,
-		ClientIP:     config.ClientIP,
+		DockerConfig: dockerStruct,
+		OvhConfig:    ovhStruct,
 	}
 
 	switch os.Args[1] {
 	case "init":
-		resp, err := api.SwarmInit(*dockerCfg)
+		ovhCfg := &ovh.Config{
+			IdentityEndpoint: config.OvhConfig.IdentityEndpoint,
+			Username:         config.OvhConfig.Username,
+			Password:         config.OvhConfig.Password,
+			TenantID:         config.OvhConfig.TenantID,
+			DomainName:       config.OvhConfig.DomainName,
+			Region:           config.OvhConfig.Region,
+			ImageID:          config.OvhConfig.ImageID,
+			FlavorName:       config.OvhConfig.FlavorName,
+			Count:            1,
+			Networks:         config.OvhConfig.Networks,
+		}
+
+		computeResp, err := ovh.CreateCompute(*ovhCfg, "manager")
 		check(err)
+
+		fmt.Println(computeResp)
+
+		dockerCfg := &api.SwarmConfig{
+			Endpoint:  config.DockerConfig.Endpoint,
+			SwarmPort: config.DockerConfig.SwarmPort,
+			PrivateIP: "127.0.0.1",
+			ClientIP:  "127.0.0.1",
+		}
+
+		initResp, err := api.SwarmInit(*dockerCfg)
+		check(err)
+
+		log.Println(initResp)
 
 		token, err := api.SwarmTokens(*dockerCfg)
 		check(err)
@@ -105,19 +69,20 @@ func main() {
 			WorkerToken:  token["Worker"],
 		}
 
-		yaml, err := yaml.Marshal(*z)
-		check(err)
+		writeYaml(z, dockerYaml)
 
-		err = ioutil.WriteFile(dockerYaml, yaml, 0644)
-		check(err)
-
-		log.Println(resp)
 	case "manager", "worker":
 
-		resp, err := api.JoinSwarm(*dockerCfg)
-		check(err)
+		/*
+			        masterIPs, err := ovh.SearchSwarm(*ovhCfg, config.DockerConfig.Nodetype)
+					check(err)
 
-		log.Println(resp)
+					createResp := ovh.CreateCompute(*ovhCfg, config.DockerConfig.Nodetype)
+					resp, err := api.JoinSwarm(*dockerCfg)
+					check(err)
+
+			        log.Println(resp)
+		*/
 	case "heal":
 		log.Println("Healing not active anymore")
 	}
@@ -127,4 +92,37 @@ func check(e error) {
 	if e != nil {
 		log.Fatal(e)
 	}
+}
+
+func findnetworks() {
+	opts := gophercloud.AuthOptions{
+		IdentityEndpoint: "https://auth.cloud.ovh.net/v3",
+		Username:         "A6G9Dta96qxD",
+		Password:         "9djNmvwwqF8CaMU9uwn9aRsC7U3YAyMa",
+		TenantID:         "6f4784ed5ce5486084ed1004c53c2642",
+		DomainName:       "default",
+	}
+	provider, err := openstack.AuthenticatedClient(opts)
+	check(err)
+
+	client, err := openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{
+		Region: "BHS3",
+	})
+
+	myBool := false
+
+	netOpts := &networks.ListOpts{Shared: &myBool}
+
+	// Retrieve a pager (i.e. a paginated collection)
+	pager := networks.List(client, netOpts)
+
+	// Define an anonymous function to be executed on each page's iteration
+	err = pager.EachPage(func(page pagination.Page) (bool, error) {
+		networkList, _ := networks.ExtractNetworks(page)
+
+		for _, n := range networkList {
+			fmt.Printf("Network: %v  ID: %v", n.Name, n.ID)
+		}
+		return false, nil
+	})
 }
