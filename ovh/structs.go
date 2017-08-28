@@ -6,12 +6,12 @@ type Config struct {
 	Username         string
 	Password         string
 	TenantID         string
+	TenantName       string
 	DomainName       string
 	Region           string
 	ImageID          string
 	FlavorName       string
-	Count            int
-	Networks         []string
+	Count            string
 }
 
 // PrivateIPAddress data
@@ -20,9 +20,4 @@ type PrivateIPAddress struct {
 	OSEXTIPSType       string `json:"OS-EXT-IPS:type"`
 	Addr               string `json:"addr"`
 	Version            int    `json:"version"`
-}
-
-// IPAddress data
-type IPAddress struct {
-	Addr string `json:"addr"`
 }

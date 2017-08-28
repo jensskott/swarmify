@@ -11,15 +11,15 @@ type DockerConfigFile struct {
 
 // OvhConfigFile for the run
 type OvhConfigFile struct {
-	IdentityEndpoint string   `yaml:"identityendpoint"`
-	Username         string   `yaml:"username"`
-	Password         string   `yaml:"password"`
-	TenantID         string   `yaml:"tenantid"`
-	DomainName       string   `yaml:"domainname"`
-	Region           string   `yaml:"region"`
-	ImageID          string   `yaml:"imageid"`
-	FlavorName       string   `yaml:"flavorname"`
-	Networks         []string `yaml:"networks"`
+	IdentityEndpoint string `yaml:"identityendpoint"`
+	Username         string `yaml:"username"`
+	Password         string `yaml:"password"`
+	TenantID         string `yaml:"tenantid"`
+	TenantName       string `yaml:"tenantname"`
+	DomainName       string `yaml:"domainname"`
+	Region           string `yaml:"region"`
+	ImageID          string `yaml:"imageid"`
+	FlavorName       string `yaml:"flavorname"`
 }
 
 // AppConfig for the whole app

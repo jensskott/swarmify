@@ -2,11 +2,8 @@ package ovh
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
-	"time"
 
-	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
 	"github.com/rackspace/gophercloud/pagination"
 )
@@ -49,40 +46,4 @@ func SearchSwarm(config Config, nodetype string) ([]string, error) {
 		return nil, err
 	}
 	return ip, nil
-}
-
-func waitForIP(client *gophercloud.ServiceClient, id string) ([]string, error) {
-
-	var ips []string
-	nets := []string{"VLAN-Static", "Ext-Net"}
-
-	for _, i := range nets {
-		var ipData IPAddress
-
-		for {
-			srv, _ := servers.Get(client, id).Extract()
-			if srv.Addresses[i] == nil {
-				time.Sleep(time.Second * 20)
-				continue
-			}
-			fmt.Println(srv.Addresses[i])
-			jsonByte, err := json.Marshal(srv.Addresses[i])
-			if err != nil {
-				return nil, err
-			}
-
-			err = json.Unmarshal(jsonByte, &ipData)
-			if err != nil {
-				return nil, err
-			}
-
-			ips = append(ips, ipData.Addr)
-
-			if len(ips) > 2 {
-				break
-			}
-		}
-	}
-
-	return ips, nil
 }

@@ -1,41 +1,39 @@
 package ovh
 
 import (
-	"github.com/rackspace/gophercloud/openstack/compute/v2/servers"
+	"bufio"
+	"os/exec"
+	"strings"
 )
 
-func CreateCompute(config Config, nodetype string) ([]string, error) {
-	client, err := Connect(config)
+// CreateCompute resource for ovh
+func CreateCompute(nodetype string) (map[string]string, error) {
+
+	cmd := exec.Command("terraform", "apply")
+	err := cmd.Run()
 	if err != nil {
 		return nil, err
 	}
 
-	network1 := servers.Network{UUID: config.Networks[0]}
-	network2 := servers.Network{UUID: config.Networks[1]}
+	return getIps(), nil
+}
 
-	networks := []servers.Network{network1, network2}
+func getIps() map[string]string {
+	var lines []string
+	m := make(map[string]string)
 
-	name := ("swarm" + nodetype)
+	cmd, _ := exec.Command("terraform", "output").Output()
 
-	serverOpts := &servers.CreateOpts{
-		Name:       name,
-		FlavorName: config.FlavorName,
-		ImageRef:   config.ImageID,
-		Networks:   networks,
+	scanner := bufio.NewScanner(strings.NewReader(string(cmd)))
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
 	}
 
-	server, err := servers.Create(client, *serverOpts).Extract()
-	if err != nil {
-		return nil, err
+	for _, i := range lines {
+		x := strings.Split(i, "=")
+		y := strings.Split(x[1], ":")
+		m[y[0]] = y[1]
 	}
 
-	ips, err := waitForIP(client, server.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Just when testing
-	servers.Delete(client, server.ID)
-
-	return ips, nil
+	return m
 }
