@@ -2,6 +2,8 @@ package ovh
 
 import (
 	"bufio"
+	"errors"
+	"fmt"
 	"os/exec"
 	"strings"
 )
@@ -9,22 +11,35 @@ import (
 // CreateCompute resource for ovh
 func CreateCompute(nodetype string) (map[string]string, error) {
 
+	exec.Command("terraform", "init").Run()
+
 	cmd := exec.Command("terraform", "apply")
-	err := cmd.Run()
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, errors.New(fmt.Sprint(err) + ": " + string(output))
+	}
+
+	ips, err := getIps()
 	if err != nil {
 		return nil, err
 	}
 
-	return getIps(), nil
+	return ips, nil
 }
 
-func getIps() map[string]string {
+func getIps() (map[string]string, error) {
 	var lines []string
 	m := make(map[string]string)
 
-	cmd, _ := exec.Command("terraform", "output").Output()
+	cmd := exec.Command("terraform", "output")
 
-	scanner := bufio.NewScanner(strings.NewReader(string(cmd)))
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, errors.New(fmt.Sprint(err) + ": " + string(output))
+	}
+
+	scanner := bufio.NewScanner(strings.NewReader(string(output)))
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
@@ -35,5 +50,5 @@ func getIps() map[string]string {
 		m[y[0]] = y[1]
 	}
 
-	return m
+	return m, nil
 }
