@@ -23,12 +23,12 @@ func main() {
 
 	switch os.Args[1] {
 	case "init":
-		computeResp, err := ovh.CreateCompute(config.DockerConfig.Nodetype)
+		computeResp, err := ovh.CreateCompute(config.DockerConfig.Nodetype, os.Args[1])
 		check(err)
 
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
-			Endpoint:  computeResp[" VLAN-Static"],
+			Endpoint:  computeResp[" Ext-Net"],
 			SwarmPort: config.DockerConfig.SwarmPort,
 			PrivateIP: computeResp[" VLAN-Static"],
 			ClientIP:  computeResp[" VLAN-Static"],
@@ -73,7 +73,7 @@ func main() {
 		check(err)
 
 		// Create compute
-		computeResp, err := ovh.CreateCompute(config.DockerConfig.Nodetype)
+		computeResp, err := ovh.CreateCompute(config.DockerConfig.Nodetype, os.Args[1])
 		if err != nil {
 			log.Fatal(err)
 		}

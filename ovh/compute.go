@@ -9,12 +9,14 @@ import (
 )
 
 // CreateCompute resource for ovh
-func CreateCompute(nodetype string) (map[string]string, error) {
+func CreateCompute(nodetype, dir string) (map[string]string, error) {
 
-	exec.Command("terraform", "init").Run()
+	init := exec.Command("terraform", "init")
+	init.Dir = dir
+	init.Run()
 
 	cmd := exec.Command("terraform", "apply")
-
+	cmd.Dir = dir
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, errors.New(fmt.Sprint(err) + ": " + string(output))
