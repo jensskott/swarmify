@@ -23,7 +23,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "init":
-		computeResp, err := ovh.CreateCompute(config.DockerConfig.Nodetype, os.Args[1])
+		computeResp, err := ovh.CreateCompute(os.Args[1])
 		check(err)
 
 		// Build docker config for swarm
@@ -73,7 +73,7 @@ func main() {
 		check(err)
 
 		// Create compute
-		computeResp, err := ovh.CreateCompute(config.DockerConfig.Nodetype, os.Args[1])
+		computeResp, err := ovh.CreateCompute(os.Args[1])
 		if err != nil {
 			log.Fatal(err)
 		}

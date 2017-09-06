@@ -9,7 +9,7 @@ import (
 )
 
 // CreateCompute resource for ovh
-func CreateCompute(nodetype, dir string) (map[string]string, error) {
+func CreateCompute(dir string) (map[string]string, error) {
 
 	init := exec.Command("terraform", "init")
 	init.Dir = dir
@@ -22,7 +22,7 @@ func CreateCompute(nodetype, dir string) (map[string]string, error) {
 		return nil, errors.New(fmt.Sprint(err) + ": " + string(output))
 	}
 
-	ips, err := getIps()
+	ips, err := getIps(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -30,12 +30,12 @@ func CreateCompute(nodetype, dir string) (map[string]string, error) {
 	return ips, nil
 }
 
-func getIps() (map[string]string, error) {
+func getIps(dir string) (map[string]string, error) {
 	var lines []string
 	m := make(map[string]string)
 
 	cmd := exec.Command("terraform", "output")
-
+	cmd.Dir = dir
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, errors.New(fmt.Sprint(err) + ": " + string(output))

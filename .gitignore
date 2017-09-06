@@ -1,0 +1,12 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea/inspectionProfiles/
+.idea/modules.xml
+.idea/swarmify.iml
+.idea/workspace.xml
+
+
+# Make
+build/*
+
+# Glide
+vendor/*
