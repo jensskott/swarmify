@@ -17,7 +17,7 @@ vet:
 test:
 	@go test `glide novendor`
 
-build: vet test
+build: test
 	@mkdir -p $(BUILD_DIR)
 	GOOS=linux GOARCH=amd64 $(GO_BUILD_CMD) -o $(BUILD_DIR)/$(BINARY_NAME)-linux-amd64
 
@@ -28,4 +28,4 @@ clean:
 	rm -Rf $(BUILD_DIR)
 
 install: build
-	cp $(BUILD_DIR)/$(BINARY_NAME)-darwin-amd64 /usr/local/bin/$(BINARY_NAME)
+	cp $(BUILD_DIR)/$(BINARY_NAME)-linux-amd64 /usr/local/bin/$(BINARY_NAME)
