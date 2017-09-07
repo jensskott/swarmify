@@ -32,7 +32,7 @@ func main() {
 		computeResp, err := ovh.CreateCompute(os.Args[1])
 		check(err)
 
-		ep := fmt.Sprintf("%s:2375", computeResp[" Ext-Net"])
+		ep := fmt.Sprintf("%s:2376", computeResp[" Ext-Net"])
 
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
@@ -86,7 +86,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		ep := fmt.Sprintf("%s:2375", computeResp[" Ext-Net"])
+		ep := fmt.Sprintf("%s:2376", computeResp[" Ext-Net"])
 
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
