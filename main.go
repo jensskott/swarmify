@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"fmt"
 	api "github.com/jensskott/swarmify/api"
 	"github.com/jensskott/swarmify/ovh"
 )
@@ -22,13 +23,20 @@ func main() {
 	}
 
 	switch os.Args[1] {
+	case "bastion":
+		computeResp, err := ovh.CreateCompute(os.Args[1])
+		check(err)
+		log.Println(computeResp)
+
 	case "init":
 		computeResp, err := ovh.CreateCompute(os.Args[1])
 		check(err)
 
+		ep := fmt.Sprintf("%s:2375", computeResp[" Ext-Net"])
+
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
-			Endpoint:  computeResp[" Ext-Net"],
+			Endpoint:  ep,
 			SwarmPort: config.DockerConfig.SwarmPort,
 			PrivateIP: computeResp[" VLAN-Static"],
 			ClientIP:  computeResp[" VLAN-Static"],
@@ -78,10 +86,12 @@ func main() {
 			log.Fatal(err)
 		}
 
+		ep := fmt.Sprintf("%s:2375", computeResp[" Ext-Net"])
+
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
 			SwarmMaster: masterIPs,
-			Endpoint:    computeResp[" VLAN-Static"],
+			Endpoint:    ep,
 			SwarmPort:   config.DockerConfig.SwarmPort,
 			PrivateIP:   computeResp[" VLAN-Static"],
 			ClientIP:    computeResp[" VLAN-Static"],
