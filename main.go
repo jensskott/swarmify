@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"fmt"
+
 	api "github.com/jensskott/swarmify/api"
 	"github.com/jensskott/swarmify/ovh"
 )
@@ -78,6 +79,9 @@ func main() {
 
 		// Search cluster for master ips
 		masterIPs, err := ovh.SearchSwarm(*ovhCfg, config.DockerConfig.Nodetype)
+		if masterIPs == nil {
+			log.Fatal("No ip addresses found")
+		}
 		check(err)
 
 		// Create compute
@@ -85,7 +89,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
+		fmt.Println(computeResp)
 		ep := fmt.Sprintf("%s:2376", computeResp[" Ext-Net"])
 
 		// Build docker config for swarm

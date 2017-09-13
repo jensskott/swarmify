@@ -12,8 +12,8 @@ func Connect(config Config) (*gophercloud.ServiceClient, error) {
 		Username:         config.Username,
 		Password:         config.Password,
 		TenantID:         config.TenantID,
-		DomainName:       config.DomainName,
 	}
+
 	provider, err := openstack.AuthenticatedClient(opts)
 	if err != nil {
 		return nil, err
@@ -22,6 +22,8 @@ func Connect(config Config) (*gophercloud.ServiceClient, error) {
 	client, err := openstack.NewComputeV2(provider, gophercloud.EndpointOpts{
 		Region: config.Region,
 	})
-
+	if err != nil {
+		return nil, err
+	}
 	return client, nil
 }

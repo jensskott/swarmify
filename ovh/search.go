@@ -19,7 +19,7 @@ func SearchSwarm(config Config, nodetype string) ([]string, error) {
 		return nil, err
 	}
 
-	opts := servers.ListOpts{Image: "a4564ff3-d226-422e-98fe-b0c753dd4657"}
+	opts := servers.ListOpts{Image: "6c3a0a48-981a-4ccc-8d5e-e00c4dc3c4aa"}
 	pager := servers.List(client, opts)
 
 	// Define an anonymous function to be executed on each page's iteration

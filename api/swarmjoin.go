@@ -14,6 +14,8 @@ func JoinSwarm(config SwarmConfig) (string, error) {
 
 	var token string
 
+	fmt.Println(config)
+
 	client, err := Connect(config)
 	if err != nil {
 		return "", err

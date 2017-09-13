@@ -26,7 +26,6 @@ func CreateCompute(dir string) (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return ips, nil
 }
 
