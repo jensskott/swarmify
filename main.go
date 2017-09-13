@@ -8,6 +8,7 @@ import (
 
 	api "github.com/jensskott/swarmify/api"
 	"github.com/jensskott/swarmify/ovh"
+	"time"
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 		computeResp, err := ovh.CreateCompute(os.Args[1])
 		check(err)
 
-		ep := fmt.Sprintf("%s:2376", computeResp[" Ext-Net"])
+		ep := fmt.Sprintf("http://%s:2376", computeResp[" Ext-Net"])
 		fmt.Println(ep)
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
@@ -74,7 +75,6 @@ func main() {
 			Region:           config.OvhConfig.Region,
 			ImageID:          config.OvhConfig.ImageID,
 			FlavorName:       config.OvhConfig.FlavorName,
-			Count:            "1",
 		}
 
 		// Search cluster for master ips
@@ -90,7 +90,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		ep := fmt.Sprintf("%s:2376", computeResp[" Ext-Net"])
+		ep := fmt.Sprintf("http://%s:2376", computeResp[" Ext-Net"])
 
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
@@ -102,6 +102,8 @@ func main() {
 			Managertoken: config.DockerConfig.ManagerToken,
 			Workertoken:  config.DockerConfig.WorkerToken,
 		}
+
+		time.Sleep(120 * time.Second)
 
 		// Join swarm
 		resp, err := api.JoinSwarm(*dockerCfg)

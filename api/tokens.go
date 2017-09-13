@@ -15,7 +15,7 @@ func SwarmTokens(config SwarmConfig) (map[string]string, error) {
 		return nil, err
 	}
 
-	x, _ := client.InspectSwarm(ctx)
+	x, _ := client.SwarmInspect(ctx)
 	tokens["Manager"] = x.JoinTokens.Manager
 	tokens["Worker"] = x.JoinTokens.Worker
 

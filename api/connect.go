@@ -1,13 +1,12 @@
 package api
 
 import (
-	docker "github.com/fsouza/go-dockerclient"
+	"github.com/docker/docker/client"
 )
 
 // Connect to docker client
-func Connect(config SwarmConfig) (*docker.Client, error) {
-
-	c, err := docker.NewClient(config.Endpoint)
+func Connect(config SwarmConfig) (*client.Client, error) {
+	c, err := client.NewClient(config.Endpoint, "1.30", nil, nil)
 	if err != nil {
 		return nil, err
 	}

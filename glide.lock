@@ -1,91 +1,16 @@
-hash: c31766b53eaba7eed9f5dc0258954ab7aed8b502707885174f8cca5002e9fa56
-updated: 2017-09-13T08:37:44.81318109+02:00
+hash: 0e4113adc502f2a3752b45ee266122025d4514bf83de0fcbd971c4eed46c9ec1
+updated: 2017-09-13T21:20:30.925336641+02:00
 imports:
-- name: github.com/Azure/go-ansiterm
-  version: 19f72df4d05d31cbe1c56bfc8045c96babff6c7e
-  subpackages:
-  - winterm
 - name: github.com/docker/docker
   version: 90d35abf7b3535c1c319c872900fbd76374e521c
   subpackages:
-  - api/types
-  - api/types/blkiodev
-  - api/types/container
-  - api/types/filters
-  - api/types/mount
-  - api/types/network
-  - api/types/registry
-  - api/types/strslice
   - api/types/swarm
-  - api/types/versions
-  - opts
-  - pkg/archive
-  - pkg/fileutils
-  - pkg/homedir
-  - pkg/idtools
-  - pkg/ioutils
-  - pkg/jsonlog
-  - pkg/jsonmessage
-  - pkg/longpath
-  - pkg/pools
-  - pkg/promise
-  - pkg/stdcopy
-  - pkg/system
-  - pkg/term
-  - pkg/term/windows
-- name: github.com/docker/go-connections
-  version: 3ede32e2033de7505e6500d6c868c2b9ed9f169d
-  subpackages:
-  - nat
-- name: github.com/docker/go-units
-  version: 0dadbb0345b35ec7ef35e228dabb8de89a65bf52
-- name: github.com/fsouza/go-dockerclient
-  version: 98edf3edfae6a6500fecc69d2bcccf1302544004
-- name: github.com/Microsoft/go-winio
-  version: 78439966b38d69bf38227fbf57ac8a6fee70f69a
-- name: github.com/mitchellh/mapstructure
-  version: d0303fe809921458f417bcf828397a65db30a7e4
-- name: github.com/Nvveen/Gotty
-  version: cd527374f1e5bff4938207604a14f2e38a9cf512
-- name: github.com/opencontainers/runc
-  version: 593914b8bd5448a93f7c3e4902a03408b6d5c0ce
-  subpackages:
-  - libcontainer/system
-  - libcontainer/user
-- name: github.com/racker/perigee
-  version: 44a7879d89b7040bcdb51164a83292ef5bf9deec
 - name: github.com/rackspace/gophercloud
   version: da56de6a59e53fdd61be1b5d9b87df34c47ac420
   subpackages:
   - openstack
   - openstack/compute/v2/servers
-  - openstack/identity/v2/tenants
-  - openstack/identity/v2/tokens
-  - openstack/identity/v3/endpoints
-  - openstack/identity/v3/services
-  - openstack/identity/v3/tokens
-  - openstack/utils
   - pagination
-  - testhelper
-  - testhelper/client
-- name: github.com/sirupsen/logrus
-  version: f006c2ac4710855cf0f916dd6b77acf6b048dc6e
-- name: github.com/Sirupsen/logrus
-  version: 89742aefa4b206dcf400792f3bd35b542998eb3b
-- name: golang.org/x/crypto
-  version: faadfbdc035307d901e69eea569f5dda451a3ee3
-  subpackages:
-  - ssh/terminal
-- name: golang.org/x/net
-  version: b129b8e0fbeb39c8358e51a07ab6c50ad415e72e
-  subpackages:
-  - context
-  - context/ctxhttp
-- name: golang.org/x/sys
-  version: 9aade4d3a3b7e6d876cd3823ad20ec45fc035402
-  subpackages:
-  - unix
-  - windows
 - name: gopkg.in/yaml.v2
   version: a83829b6f1293c91addabc89d0571c246397bbf4
 testImports: []

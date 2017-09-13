@@ -4,7 +4,6 @@ import:
   version: ~17.5.0-ce-rc3
   subpackages:
   - api/types/swarm
-- package: github.com/fsouza/go-dockerclient
 - package: github.com/rackspace/gophercloud
   version: ~1.0.0
   subpackages:

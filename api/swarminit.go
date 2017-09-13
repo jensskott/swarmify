@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/docker/docker/api/types/swarm"
-	docker "github.com/fsouza/go-dockerclient"
 )
 
 // SwarmInit init swarm if needed
@@ -17,16 +16,14 @@ func SwarmInit(config SwarmConfig) (string, error) {
 		return "", err
 	}
 
-	s := &docker.InitSwarmOptions{
-		swarm.InitRequest{
-			ListenAddr:       fmt.Sprintf("%s:%s", config.PrivateIP, config.SwarmPort),
-			AdvertiseAddr:    fmt.Sprintf("%s:%s", config.PrivateIP, config.SwarmPort),
-			ForceNewCluster:  false,
-			AutoLockManagers: false,
-		},
-		ctx,
+	s := &swarm.InitRequest{
+		ListenAddr:       fmt.Sprintf("%s:%s", config.PrivateIP, config.SwarmPort),
+		AdvertiseAddr:    fmt.Sprintf("%s:%s", config.PrivateIP, config.SwarmPort),
+		ForceNewCluster:  false,
+		AutoLockManagers: false,
 	}
-	_, err = client.InitSwarm(*s)
+
+	_, err = client.SwarmInit(ctx, *s)
 	if err != nil {
 		return "", err
 	}

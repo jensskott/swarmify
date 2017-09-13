@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/docker/docker/api/types/swarm"
-	docker "github.com/fsouza/go-dockerclient"
 )
 
 // JoinSwarm with token
@@ -25,17 +24,14 @@ func JoinSwarm(config SwarmConfig) (string, error) {
 		token = config.Workertoken
 	}
 
-	join := &docker.JoinSwarmOptions{
-		swarm.JoinRequest{
-			ListenAddr:    config.PrivateIP,
-			AdvertiseAddr: config.ClientIP,
-			RemoteAddrs:   config.SwarmMaster,
-			JoinToken:     token,
-		},
-		ctx,
+	join := swarm.JoinRequest{
+		ListenAddr:    config.PrivateIP,
+		AdvertiseAddr: config.ClientIP,
+		RemoteAddrs:   config.SwarmMaster,
+		JoinToken:     token,
 	}
 
-	err = client.JoinSwarm(*join)
+	err = client.SwarmJoin(ctx, join)
 	if err != nil {
 		return "", err
 	}

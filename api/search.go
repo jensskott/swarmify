@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	docker "github.com/fsouza/go-dockerclient"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
 )
 
 // SearchSwarmCluster for the correct nodes
@@ -18,16 +19,14 @@ func SearchSwarmCluster(config SwarmConfig) ([]string, error) {
 		return nil, err
 	}
 
-	x := make(map[string][]string)
+	f := filters.NewArgs()
+	f.Add("role", config.Nodetype)
 
-	x["role"] = append(x["role"], config.Nodetype)
-
-	l := &docker.ListNodesOptions{
-		Filters: x,
-		Context: ctx,
+	l := &types.NodeListOptions{
+		Filters: f,
 	}
 
-	nodes, _ := client.ListNodes(*l)
+	nodes, _ := client.NodeList(ctx, *l)
 	if nodes != nil {
 		nodeData = append(nodeData, nodes[0].ManagerStatus.Addr)
 		nodeData = append(nodeData, fmt.Sprintf("%s", nodes[0].Status.State))
