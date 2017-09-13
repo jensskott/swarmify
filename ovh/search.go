@@ -19,7 +19,7 @@ func SearchSwarm(config Config, nodetype string) ([]string, error) {
 		return nil, err
 	}
 
-	opts := servers.ListOpts{Image: "6c3a0a48-981a-4ccc-8d5e-e00c4dc3c4aa"}
+	opts := servers.ListOpts{Image: "5782f59a-9dc8-4ccb-9d20-e79718cd312a"}
 	pager := servers.List(client, opts)
 
 	// Define an anonymous function to be executed on each page's iteration
@@ -27,7 +27,7 @@ func SearchSwarm(config Config, nodetype string) ([]string, error) {
 		serverList, _ := servers.ExtractServers(page)
 		for _, s := range serverList {
 			if strings.Contains(s.Name, nodetype) {
-				jsonByte, err := json.Marshal(s.Addresses["VLAN-Static"])
+				jsonByte, err := json.Marshal(s.Addresses["Ext-Net"])
 				if err != nil {
 					return false, err
 				}

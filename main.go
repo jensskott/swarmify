@@ -27,20 +27,20 @@ func main() {
 	case "bastion":
 		computeResp, err := ovh.CreateCompute(os.Args[1])
 		check(err)
-		log.Println(computeResp)
+		log.Printf("Bastion created with ip %s", computeResp[" Ext-Net"])
 
 	case "init":
 		computeResp, err := ovh.CreateCompute(os.Args[1])
 		check(err)
 
 		ep := fmt.Sprintf("%s:2376", computeResp[" Ext-Net"])
-
+		fmt.Println(ep)
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
 			Endpoint:  ep,
 			SwarmPort: config.DockerConfig.SwarmPort,
-			PrivateIP: computeResp[" VLAN-Static"],
-			ClientIP:  computeResp[" VLAN-Static"],
+			PrivateIP: computeResp[" Ext-Net"],
+			ClientIP:  computeResp[" Ext-Net"],
 		}
 
 		initResp, err := api.SwarmInit(*dockerCfg)
@@ -89,16 +89,18 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(computeResp)
+
 		ep := fmt.Sprintf("%s:2376", computeResp[" Ext-Net"])
 
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
-			SwarmMaster: masterIPs,
-			Endpoint:    ep,
-			SwarmPort:   config.DockerConfig.SwarmPort,
-			PrivateIP:   computeResp[" VLAN-Static"],
-			ClientIP:    computeResp[" VLAN-Static"],
+			SwarmMaster:  masterIPs,
+			Endpoint:     ep,
+			SwarmPort:    config.DockerConfig.SwarmPort,
+			PrivateIP:    computeResp[" Ext-Net"],
+			ClientIP:     computeResp[" Ext-Net"],
+			Managertoken: config.DockerConfig.ManagerToken,
+			Workertoken:  config.DockerConfig.WorkerToken,
 		}
 
 		// Join swarm
