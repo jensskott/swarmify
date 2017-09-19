@@ -12,6 +12,13 @@ type Config struct {
 	ImageID          string
 	FlavorName       string
 	Count            string
+	Rules            []struct {
+		Name     string
+		Protocol string
+		Fromport int
+		Toport   int
+		Cidr     string
+	}
 }
 
 // PrivateIPAddress data

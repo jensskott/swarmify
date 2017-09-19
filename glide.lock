@@ -1,5 +1,5 @@
-hash: b33ce54eb223c8d287d48b2a15bcda9f8deb2136592d76e106901223e1940284
-updated: 2017-09-15T13:16:19.368040692+02:00
+hash: a7e13482efbc484069036a033e7d5660acb3ca9b93b8a15d91b8f8d9844a3263
+updated: 2017-09-19T09:33:16.391610094+02:00
 imports:
 - name: github.com/docker/distribution
   version: 5db89f0ca68677abc5eefce8f2a0a772c98ba52d
@@ -66,11 +66,11 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 89742aefa4b206dcf400792f3bd35b542998eb3b
 - name: golang.org/x/crypto
-  version: faadfbdc035307d901e69eea569f5dda451a3ee3
+  version: 7d9177d70076375b9a59c8fde23d52d9c4a7ecd5
   subpackages:
   - ssh/terminal
 - name: golang.org/x/net
-  version: 859d1a86bb617c0c20d154590c3c5d3fcb670b07
+  version: 8351a756f30f1297fe94bbf4b767ec589c6ea6d0
   subpackages:
   - context
   - context/ctxhttp
@@ -80,6 +80,8 @@ imports:
   subpackages:
   - unix
   - windows
+- name: gopkg.in/alecthomas/kingpin.v2
+  version: 1087e65c9441605df944fb12c33f0fe7072d18ca
 - name: gopkg.in/yaml.v2
   version: a83829b6f1293c91addabc89d0571c246397bbf4
 testImports: []

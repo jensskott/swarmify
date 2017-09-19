@@ -1,6 +1,7 @@
 package main
 
 import (
+	cli "gopkg.in/alecthomas/kingpin.v2"
 	"log"
 	"os"
 
@@ -8,35 +9,54 @@ import (
 
 	"time"
 
+	"github.com/aws/aws-sdk-go/service/clouddirectory"
 	api "github.com/jensskott/swarmify/api"
 	"github.com/jensskott/swarmify/ovh"
 )
 
+var (
+	swarmtype  = cli.Flag("type", "What node type to run").Required().String()
+	dockerYaml = cli.Flag("dockerconfig", "Docker config file").Required().String()
+	ovhYaml    = cli.Flag("ovhconfig", "Ovh config file").Required().String()
+)
+
 func main() {
+	cli.Version("0.1.0")
+	cli.Parse()
 
-	dir, _ := os.Getwd()
-	dockerYaml := (dir + "/docker.yaml")
-	ovhYaml := (dir + "/ovh.yaml")
-
-	dockerStruct, ovhStruct := readYaml(dockerYaml, ovhYaml)
+	dockerStruct, ovhStruct := readYaml(*dockerYaml, *ovhYaml)
 
 	config := &AppConfig{
 		DockerConfig: dockerStruct,
 		OvhConfig:    ovhStruct,
 	}
 
-	switch os.Args[1] {
-	case "bastion":
-		computeResp, err := ovh.CreateCompute(os.Args[1])
-		check(err)
-		log.Printf("Bastion created with ip %s", computeResp[" Ext-Net"])
+	ovhCfg := &ovh.Config{
+		IdentityEndpoint: config.OvhConfig.Identityendpoint,
+		Username:         config.OvhConfig.Username,
+		Password:         config.OvhConfig.Password,
+		TenantID:         config.OvhConfig.Tenantid,
+		TenantName:       config.OvhConfig.Tenantname,
+		DomainName:       config.OvhConfig.Domainname,
+		Region:           config.OvhConfig.Region,
+		ImageID:          config.OvhConfig.Imageid,
+		FlavorName:       config.OvhConfig.Flavorname,
+		Rules:            config.OvhConfig.Rules,
+	}
 
+	switch *swarmtype {
 	case "init":
-		computeResp, err := ovh.CreateCompute(os.Args[1])
+		infraResp, err := ovh.CreateInfra(*ovhCfg)
+		check(err)
+		os.Exit(1)
+
+		log.Println(infraResp)
+
+		computeResp, err := ovh.CreateCompute(*swarmtype)
 		check(err)
 
 		ep := fmt.Sprintf("http://%s:2376", computeResp[" Ext-Net"])
-		fmt.Println(ep)
+
 		// Build docker config for swarm
 		dockerCfg := &api.SwarmConfig{
 			Endpoint:  ep,
@@ -65,20 +85,9 @@ func main() {
 		}
 
 		// Write new dockerfile with tokens
-		writeYaml(z, dockerYaml)
+		writeYaml(z, *dockerYaml)
 
 	case "manager", "worker":
-		ovhCfg := &ovh.Config{
-			IdentityEndpoint: config.OvhConfig.IdentityEndpoint,
-			Username:         config.OvhConfig.Username,
-			Password:         config.OvhConfig.Password,
-			TenantID:         config.OvhConfig.TenantID,
-			TenantName:       config.OvhConfig.TenantName,
-			DomainName:       config.OvhConfig.DomainName,
-			Region:           config.OvhConfig.Region,
-			ImageID:          config.OvhConfig.ImageID,
-			FlavorName:       config.OvhConfig.FlavorName,
-		}
 
 		// Search cluster for master ips
 		masterIPs, err := ovh.SearchSwarm(*ovhCfg, config.DockerConfig.Nodetype)

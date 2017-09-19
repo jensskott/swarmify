@@ -13,3 +13,5 @@ import:
 - package: gopkg.in/yaml.v2
 - package: github.com/racker/perigee
   version: ~0.1.0
+- package: gopkg.in/alecthomas/kingpin.v2
+  version: ~2.2.5

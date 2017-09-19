@@ -10,3 +10,7 @@ build/*
 
 # Glide
 vendor/*
+
+# Config
+ovh.yaml
+docker.yaml

@@ -11,6 +11,10 @@ import (
 // CreateCompute resource for ovh
 func CreateCompute(dir string) (map[string]string, error) {
 
+	clean := exec.Command("rm", "-rf", "terraform.tfstate.backup", ".terraform")
+	clean.Dir = dir
+	clean.Run()
+
 	init := exec.Command("terraform", "init")
 	init.Dir = dir
 	init.Run()
