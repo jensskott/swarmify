@@ -6,9 +6,10 @@ import (
 
 	"fmt"
 
+	"time"
+
 	api "github.com/jensskott/swarmify/api"
 	"github.com/jensskott/swarmify/ovh"
-	"time"
 )
 
 func main() {
@@ -43,6 +44,8 @@ func main() {
 			PrivateIP: computeResp[" Ext-Net"],
 			ClientIP:  computeResp[" Ext-Net"],
 		}
+
+		time.Sleep(120 * time.Second)
 
 		initResp, err := api.SwarmInit(*dockerCfg)
 		check(err)
@@ -101,6 +104,7 @@ func main() {
 			ClientIP:     computeResp[" Ext-Net"],
 			Managertoken: config.DockerConfig.ManagerToken,
 			Workertoken:  config.DockerConfig.WorkerToken,
+			Nodetype:     os.Args[1],
 		}
 
 		time.Sleep(120 * time.Second)

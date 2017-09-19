@@ -11,3 +11,5 @@ import:
   - openstack/compute/v2/servers
   - pagination
 - package: gopkg.in/yaml.v2
+- package: github.com/racker/perigee
+  version: ~0.1.0
